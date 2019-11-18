@@ -6,5 +6,5 @@ $(phony all): visbuf
 visbuf: ./*.o
 	$(CC) $(CFLAGS) -o $(output) $(inputs)
 
-%.0: %.c
+%.o: %.c
 	$(CC) $(CFLAGS) -o $(output) -c $(input)
