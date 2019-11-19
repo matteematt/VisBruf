@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -O0
+CFLAGS := -O0 -Werror -Wall
 
 $(phony all): visbuf
 
