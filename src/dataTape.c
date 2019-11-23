@@ -10,4 +10,5 @@ void dt_DataTape(DataTape *data)
 void dt_DelDataTape(DataTape *data)
 {
   free(data->mData);
+  data->mData = NULL;
 }
