@@ -15,8 +15,6 @@ int main(int argc, char **argv)
 
   DataTape data;
   dt_DataTape(&data);
-  dt_DelDataTape(&data);
-  dt_DelDataTape(&data);
 
   bool isRunning = true;
 
