@@ -1,5 +1,7 @@
 #include "tickerDisplay.h"
 
+static const int DIGITS_IN_BYTE = 3;
+
 //Private functions declarations
 char *drawTickerHR(int ttyWidth);
 void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth, 
@@ -48,9 +50,9 @@ inline unsigned char getCharInPosition(unsigned char byte, int position)
 void formatCharAsIntToString(char *string, unsigned char data)
 {
   const int ASCII_OFFSET = 48;
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < DIGITS_IN_BYTE; i++)
   {
-    string[i] = getCharInPosition(data, 3 - i) + ASCII_OFFSET;
+    string[i] = getCharInPosition(data, DIGITS_IN_BYTE - i) + ASCII_OFFSET;
   }
 }
 
@@ -59,7 +61,7 @@ void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth,
 {
   int colCount = (int) (ttyWidth - 3) / 4;
 
-  char *string = malloc(sizeof(char) * 3);
+  char *string = malloc(sizeof(char) * DIGITS_IN_BYTE);
 
   dataBuffer[0] = ' ';
   dataBuffer[1] = '|';
