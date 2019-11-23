@@ -83,7 +83,7 @@ void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth,
       dataBuffer[3 + i * 4] = string[1];
       dataBuffer[4 + i * 4] = string[2];
       dataBuffer[5 + i * 4] = '|';
-      if (dataIndex == data->mDataLen - 1)
+      if (dataIndex >= data->mDataLen - 1)
       {
         //Next time we will be out of bounds
         *outOfBounds = true;
