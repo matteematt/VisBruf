@@ -6,19 +6,19 @@
 
 #include "tickerDisplay.h"
 #include "dataTape.h"
+#include "prompt.h"
 
 int main(int argc, char **argv)
 {
-  printf("Hello Moto\n");
-
   TickerDisplay display = {.mScrollDepth = 0, .mTickerHeight = 6}; 
 
   DataTape data;
   dt_DataTape(&data);
 
-  bool isRunning = true;
+  Prompt prompt;
+  p_Prompt(&prompt);
 
-  char inputBuff[64];
+  bool isRunning = true;
 
   struct winsize size;
 
@@ -32,22 +32,11 @@ int main(int argc, char **argv)
 
     td_drawTicker(&display, &data, size.ws_col);
 
-    printf("@ ");
-
-    //Try and get input
-    if (fgets(inputBuff, sizeof inputBuff, stdin))
-    {
-
-    }
-    else
-    {
-      printf("Error getting input from user, exiting\n");
-    }
-
-    //Display the ticker display
+    p_runPrompt(&prompt, &data);
   }
 
   dt_DelDataTape(&data);
+  p_DelPrompt(&prompt);
 
   return 0;
 }
