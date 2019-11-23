@@ -52,7 +52,7 @@ void formatCharAsIntToString(char *string, unsigned char data)
   const int ASCII_OFFSET = 48;
   for (int i = 0; i < DIGITS_IN_BYTE; i++)
   {
-    string[i] = getCharInPosition(data, DIGITS_IN_BYTE - i) + ASCII_OFFSET;
+    string[i] = getCharInPosition(data, DIGITS_IN_BYTE - 1 - i) + ASCII_OFFSET;
   }
 }
 
