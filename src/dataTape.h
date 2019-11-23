@@ -10,7 +10,7 @@
   * the array then doubles in length
   */
 typedef struct DataTape {
-  char *mData;
+  unsigned char *mData;
   int mDataIndex;
   int mDataLen;
 } DataTape;
