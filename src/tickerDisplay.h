@@ -1,5 +1,7 @@
 #include <stdio.h>
-
+//For getting the terminal width
+#include <sys/ioctl.h>
+#include <unistd.h>
 /**
   * The width of the terminal window in chars
   * The width of the display
@@ -15,4 +17,5 @@ typedef struct TickerDisplay{
 
 void td_clearTTY(void);
 
-void td_drawTicker(const int dataPtr, const char const *dataTicker);
+//returns the number of rows the function has drawn
+int td_drawTicker(const TickerDisplay *dataTicker, const int dataIndex, const struct winsize *size);
