@@ -1,3 +1,6 @@
+#ifndef TICKERDISPLAY
+#define TICKERDISPLAY
+
 #include <stdio.h>
 //For getting the terminal width
 #include <sys/ioctl.h>
@@ -19,3 +22,5 @@ void td_clearTTY(void);
 
 //returns the number of rows the function has drawn
 int td_drawTicker(const TickerDisplay *dataTicker, const int dataIndex, const struct winsize *size);
+
+#endif

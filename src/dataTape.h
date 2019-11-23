@@ -1,3 +1,6 @@
+#ifndef DATATAPE
+#define DATATAPE
+
 #include <stdlib.h>
 
 /**
@@ -15,3 +18,5 @@ typedef struct DataTape {
 void dt_DataTape(DataTape *data);
 
 void dt_DelDataTape(DataTape *data);
+
+#endif
