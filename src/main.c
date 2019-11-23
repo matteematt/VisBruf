@@ -33,9 +33,10 @@ int main(int argc, char **argv)
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     printf("Width %d, Height %d\n", size.ws_col, size.ws_row);
 
+    td_drawTicker(&display, &data, size.ws_col);
+
     printf("@ ");
 
-    td_drawTicker(&display, data.mDataIndex, &size);
     //Try and get input
     if (fgets(inputBuff, sizeof inputBuff, stdin))
     {
