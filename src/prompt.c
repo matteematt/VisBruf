@@ -2,6 +2,7 @@
 
 //Private functions
 void parseInput(Prompt *prompt, DataTape *data);
+void parseInputCommand(DataTape *data);
 
 void p_Prompt(Prompt *prompt)
 {
@@ -67,9 +68,20 @@ void parseInput(Prompt *prompt, DataTape *data)
           dt_growTape(data);
         }
         break;
+      case ',':
+        //Get a byte of input from the user and save it in the tape
+        parseInputCommand(data);
+        break;
       default:
         //do nothing
         break;
     }
   }
+}
+
+inline void parseInputCommand(DataTape *data)
+{
+  printf("\n# ");
+  char c = getchar();
+  data->mData[data->mDataIndex] = c;
 }
