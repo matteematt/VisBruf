@@ -26,13 +26,13 @@ int main(int argc, char **argv)
   {
     td_clearTTY();
 
-    //private struct to get the tty size, don't want to put a new one
-    //on the stack every function invocation
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-
     td_drawTicker(&display, &data, size.ws_col);
 
-    p_runPrompt(&prompt, &data);
+    p_printOutputList(&prompt, &data);
+    p_getPromptInput(&prompt);
+    p_parseInput(&prompt, &data);
+
   }
 
   dt_DelDataTape(&data);
