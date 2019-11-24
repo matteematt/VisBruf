@@ -34,6 +34,8 @@ int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int tty
     printf("%s\n", verticalSeperator);
     drawLines += 2;
   }
+  printf("\n");
+  drawLines++;
 
   free(verticalSeperator);
   free(dataBuffer);
