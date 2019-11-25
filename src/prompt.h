@@ -15,8 +15,9 @@ typedef struct Command {
   * Dynamic history of commands so we can go back throughtr them
   * the current max length of this dynamic array, wioll double in size when full
   * the index of the current latests command
+  * The index of the char currently looking at in the string
   * A string which is the current input command, before its saved to the command array
-  * A list of ints which are indexes to put the chars after the prompt is run, -1 means dont print
+  * An queue of chars pushed to by the . brainfuck command
   * The max length of this dynamic int array, will double in size when full
   * The current index that points to the most recently pushed output index
   */
@@ -24,8 +25,9 @@ typedef struct Prompt{
   Command *mHistory;
   int mHistoryLength;
   int mHeadPosition;
+  int mInputIndex;
   char *mInputBuff;
-  int *mOutputList;
+  unsigned char *mOutputList;
   int mOutputListLen;
   int mOutputListIndex;
 } Prompt;
