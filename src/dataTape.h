@@ -16,7 +16,8 @@ typedef struct DataTape {
 } DataTape;
 
 void dt_DataTape(DataTape *data);
-
 void dt_DelDataTape(DataTape *data);
+
+void dt_growTape(DataTape *data);
 
 #endif

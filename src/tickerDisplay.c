@@ -34,6 +34,8 @@ int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int tty
     printf("%s\n", verticalSeperator);
     drawLines += 2;
   }
+  printf("\n");
+  drawLines++;
 
   free(verticalSeperator);
   free(dataBuffer);
@@ -52,7 +54,7 @@ void formatCharAsIntToString(char *string, unsigned char data)
   const int ASCII_OFFSET = 48;
   for (int i = 0; i < DIGITS_IN_BYTE; i++)
   {
-    string[i] = getCharInPosition(data, DIGITS_IN_BYTE - i) + ASCII_OFFSET;
+    string[i] = getCharInPosition(data, DIGITS_IN_BYTE - 1 - i) + ASCII_OFFSET;
   }
 }
 

@@ -12,3 +12,9 @@ void dt_DelDataTape(DataTape *data)
   free(data->mData);
   data->mData = NULL;
 }
+
+inline void dt_growTape(DataTape *data)
+{
+  data->mDataLen *= 2;
+  data->mData = realloc(data->mData, sizeof(char) * data->mDataLen);
+}
