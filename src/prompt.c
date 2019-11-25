@@ -3,6 +3,8 @@
 //Private functions
 void parseInputCommand(DataTape *data);
 void pushOutputIndex(Prompt *prompt, DataTape *data);
+void jumpForward(Prompt *prompt, DataTape *data);
+void jumpBackwards(Prompt *prompt, DataTape *data);
 
 //Constructor
 void p_Prompt(Prompt *prompt)
@@ -13,10 +15,10 @@ void p_Prompt(Prompt *prompt)
   //Room for 128 char input and null byte
   prompt->mInputBuff = malloc(sizeof(char) * 129);
   prompt->mOutputListLen = 8;
-  prompt->mOutputList = malloc(sizeof(int) * prompt->mOutputListLen);
+  prompt->mOutputList = malloc(sizeof(char) * prompt->mOutputListLen);
   for (int i = 0; i < prompt->mOutputListLen; i++)
   {
-    prompt->mOutputList[i] = -1;
+    prompt->mOutputList[i] = '\0';
   }
   prompt->mOutputListIndex = -1;
 }
@@ -51,10 +53,12 @@ void p_getPromptInput(Prompt *prompt)
 
 void p_parseInput(Prompt *prompt, DataTape *data)
 {
-  int i;
-  for (i = 0; i <= 128 && prompt->mInputBuff[i] != '\0'; i++)
+  for (
+      prompt->mInputIndex = 0;
+      prompt->mInputIndex <= 128 && prompt->mInputBuff[prompt->mInputIndex] != '\0'; 
+      prompt->mInputIndex++)
   {
-    switch (prompt->mInputBuff[i])
+    switch (prompt->mInputBuff[prompt->mInputIndex])
     {
       case '+':
         //Increment currently selected byte
@@ -88,6 +92,14 @@ void p_parseInput(Prompt *prompt, DataTape *data)
         //Get the byte currently output and print it to stdout
         pushOutputIndex(prompt, data);
         break;
+      case '[':
+        //Jump to the command after the matching ] if the current byte is 0
+        jumpForward(prompt, data);
+        break;
+      case ']':
+        //Jump to the command after the matching [ if the current byte is non-zero
+        jumpBackwards(prompt, data);
+        break;
       default:
         //do nothing
         break;
@@ -95,15 +107,75 @@ void p_parseInput(Prompt *prompt, DataTape *data)
   }
 }
 
+//Implement the ] brainfuck command, jump after the matching [ if the current data
+//is non-zero
+void jumpBackwards(Prompt *prompt, DataTape *data)
+{
+  if (data->mData[data->mDataIndex] == 0x00)
+  {
+    return;
+  }
+
+  //Move the index to the next command in the input buffer, but account for the [
+  prompt->mInputIndex--;
+  int matchingBracketIndex = 1;
+
+  while (matchingBracketIndex > 0)
+  {
+    if (prompt->mInputBuff[prompt->mInputIndex] == ']')
+    {
+      matchingBracketIndex++;
+    }
+    if (prompt->mInputBuff[prompt->mInputIndex] == '[')
+    {
+      matchingBracketIndex--;
+    }
+    prompt->mInputIndex--;
+  }
+  //Initially it may seem we would have to move two forward, but as the data pointer
+  //moves forward next process loop anyway we would skip a command if we moved forward two
+  prompt->mInputIndex++;
+}
+
+//Implement the [ brainfuck command, jump after the matching ] if the current data
+//is zero
+void jumpForward(Prompt *prompt, DataTape *data)
+{
+  if (data->mData[data->mDataIndex] != 0x00)
+  {
+    return;
+  }
+
+  //Move the index to the next command in the input buffer, but account for the [
+  prompt->mInputIndex++;
+  int matchingBracketIndex = 1;
+
+  while (matchingBracketIndex > 0)
+  {
+    if (prompt->mInputBuff[prompt->mInputIndex] == '[')
+    {
+      matchingBracketIndex++;
+    }
+    if (prompt->mInputBuff[prompt->mInputIndex] == ']')
+    {
+      matchingBracketIndex--;
+    }
+    prompt->mInputIndex++;
+  }
+  //Have to move one back because the data pointer moves forward automatically next go
+  //and if we don't correct we would skip a command
+  prompt->mInputIndex--;
+}
+
 //Print the output list pushed to from the last command, and reset as you go
 //Filled from the brainfuck '.' command
 void p_printOutputList(Prompt *prompt, DataTape *data)
 {
   int i;
-  for (i = 0; i < prompt->mOutputListLen && prompt->mOutputList[i] != -1; i++)
+  for (i = 0; i < prompt->mOutputListLen && prompt->mOutputList[i] != '\0'; i++)
   {
-    putchar(data->mData[prompt->mOutputList[i]]);
-    prompt->mOutputList[i] = -1;
+    putchar(prompt->mOutputList[i]);
+    prompt->mOutputList[i] = '\0';
   }
   if (i > 0)
   {
@@ -127,7 +199,11 @@ inline void pushOutputIndex(Prompt *prompt, DataTape *data)
   if (prompt->mOutputListIndex == prompt->mOutputListLen)
   {
     prompt->mOutputListLen *= 2;
-    prompt->mOutputList = realloc(prompt->mOutputList, prompt->mOutputListLen);
+    prompt->mOutputList = realloc(prompt->mOutputList, prompt->mOutputListLen * sizeof(char));
+    for (int i = prompt->mOutputListIndex; i < prompt->mOutputListLen; i++)
+    {
+      prompt->mOutputList[i] = '\0';
+    }
   }
-  prompt->mOutputList[prompt->mOutputListIndex] = data->mDataIndex;
+  prompt->mOutputList[prompt->mOutputListIndex] = data->mData[data->mDataIndex];
 }
