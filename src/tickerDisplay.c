@@ -3,11 +3,11 @@
 static const int DIGITS_IN_BYTE = 3;
 
 //Private functions declarations
-char *drawTickerHR(int ttyWidth);
-void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth, 
+static char *drawTickerHR(int ttyWidth);
+static void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth, 
     int renderRow, bool *outOfBounds);
-void formatCharAsIntToString(char *string, unsigned char data);
-unsigned char getCharInPosition(unsigned char byte, int position);
+static void formatCharAsIntToString(char *string, unsigned char data);
+static unsigned char getCharInPosition(unsigned char byte, int position);
 
 inline void td_clearTTY(void)
 {
@@ -44,12 +44,12 @@ int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int tty
 }
 //Treating the byte as a 8bit number, get the positionth digit from its decimal representatioin
 //char 234, position 0 = 4, position 1 = 3, position 2 = 2
-inline unsigned char getCharInPosition(unsigned char byte, int position)
+static inline unsigned char getCharInPosition(unsigned char byte, int position)
 {
   return (unsigned char) (byte / pow(10, position)) % 10;
 }
 
-void formatCharAsIntToString(char *string, unsigned char data)
+static void formatCharAsIntToString(char *string, unsigned char data)
 {
   const int ASCII_OFFSET = 48;
   for (int i = 0; i < DIGITS_IN_BYTE; i++)
@@ -58,7 +58,7 @@ void formatCharAsIntToString(char *string, unsigned char data)
   }
 }
 
-void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth, 
+static void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth, 
     int renderRow, bool *outOfBounds)
 {
   int colCount = (int) (ttyWidth - 3) / 4;
@@ -98,7 +98,7 @@ void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth,
   free(string);
 }
 
-char *drawTickerHR(int ttyWidth)
+static char *drawTickerHR(int ttyWidth)
 {
   char *seperator = malloc(sizeof(char) * (ttyWidth + 1));
 
