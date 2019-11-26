@@ -1,10 +1,10 @@
 #include "prompt.h"
 
 //Private functions
-void parseInputCommand(DataTape *data);
-void pushOutputIndex(Prompt *prompt, DataTape *data);
-void jumpForward(Prompt *prompt, DataTape *data);
-void jumpBackwards(Prompt *prompt, DataTape *data);
+static void parseInputCommand(DataTape *data);
+static void pushOutputIndex(Prompt *prompt, DataTape *data);
+static void jumpForward(Prompt *prompt, DataTape *data);
+static void jumpBackwards(Prompt *prompt, DataTape *data);
 
 //Constructor
 void p_Prompt(Prompt *prompt)
@@ -109,7 +109,7 @@ void p_parseInput(Prompt *prompt, DataTape *data)
 
 //Implement the ] brainfuck command, jump after the matching [ if the current data
 //is non-zero
-void jumpBackwards(Prompt *prompt, DataTape *data)
+static void jumpBackwards(Prompt *prompt, DataTape *data)
 {
   if (data->mData[data->mDataIndex] == 0x00)
   {
@@ -139,7 +139,7 @@ void jumpBackwards(Prompt *prompt, DataTape *data)
 
 //Implement the [ brainfuck command, jump after the matching ] if the current data
 //is zero
-void jumpForward(Prompt *prompt, DataTape *data)
+static void jumpForward(Prompt *prompt, DataTape *data)
 {
   if (data->mData[data->mDataIndex] != 0x00)
   {
@@ -185,7 +185,7 @@ void p_printOutputList(Prompt *prompt, DataTape *data)
 }
 
 //Gets data for the ',' brainfuck command
-inline void parseInputCommand(DataTape *data)
+static inline void parseInputCommand(DataTape *data)
 {
   printf("\n# ");
   char c = getchar();
@@ -193,7 +193,7 @@ inline void parseInputCommand(DataTape *data)
 }
 
 //Pushes index onto the output array for the '.' brainfuck command
-inline void pushOutputIndex(Prompt *prompt, DataTape *data)
+static inline void pushOutputIndex(Prompt *prompt, DataTape *data)
 {
   prompt->mOutputListIndex++;
   if (prompt->mOutputListIndex == prompt->mOutputListLen)
