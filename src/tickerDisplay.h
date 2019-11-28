@@ -8,6 +8,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <math.h>
+#include <string.h>
 
 #include "dataTape.h"
 

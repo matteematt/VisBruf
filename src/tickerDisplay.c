@@ -1,13 +1,21 @@
 #include "tickerDisplay.h"
 
+//Maximum number of decimal digitis of a byte
 static const int DIGITS_IN_BYTE = 3;
+//The size required for a ANSI escape seq colour code and reset \x1b[36m\x1b[0m
+static const int ANSI_COLOUR_SIZE = 9;
+
+static const char *ANSI_CYAN = "\x1b[36m";
+static const char *ANSI_RESET = "\x1b[0m";
 
 //Private functions declarations
 static char *drawTickerHR(int ttyWidth);
-static void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth, 
+static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount, 
     int renderRow, bool *outOfBounds);
 static void formatCharAsIntToString(char *string, unsigned char data);
 static unsigned char getCharInPosition(unsigned char byte, int position);
+static void colourSelectedCell(char *dataBuffer, int selectedCol,
+    int dataStringLenRequirement);
 
 inline void td_clearTTY(void)
 {
@@ -23,13 +31,34 @@ int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int tty
 
   char *verticalSeperator = drawTickerHR(ttyWidth);
 
+  //Maximum size that the string would need to be to hold data to print to the tty
+  //Including colour escape sequences, newline, null byte
+  int dataStringLenRequirement = ttyWidth + ANSI_COLOUR_SIZE + 2;
+
   //string buffer to hold the data row to print
-  char *dataBuffer = malloc(sizeof(char) * (ttyWidth + 1));
+  char *dataBuffer = malloc(sizeof(char) * dataStringLenRequirement);
+
+  //The number of colums (data) to print 
+  int colCount = (int) (ttyWidth - 3) / 4;
+
+  //get what line the currently selcted cell is
+  int selectedLine = (int) data->mDataIndex / colCount;
 
   printf("\n%s\n", verticalSeperator); 
+  int renderRow;
   for (int i = 0; i < dataTicker->mTickerHeight; i++)
   {
-    fillDataBuffer(dataBuffer, data, ttyWidth, i + dataTicker->mScrollDepth, &outOfBounds);
+    renderRow = i + dataTicker->mScrollDepth;
+    memset(dataBuffer, 0x00, dataStringLenRequirement);
+    fillDataBuffer(dataBuffer, data, colCount, renderRow, &outOfBounds);
+    //If this is the selcted row then we want to colour in the selected cell
+    if (selectedLine == renderRow)
+    {
+      //If protects against 0/0 erors
+      int selectedCol = (selectedLine == 0) ? data->mDataIndex 
+        : data->mDataIndex % selectedLine;
+      colourSelectedCell(dataBuffer, selectedCol, dataStringLenRequirement);
+    }
     printf("%s\n", dataBuffer);
     printf("%s\n", verticalSeperator);
     drawLines += 2;
@@ -58,17 +87,37 @@ static void formatCharAsIntToString(char *string, unsigned char data)
   }
 }
 
-static void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth, 
+//Do this logic in the loop instead, take the calcualion of colcount to before the loop
+static void colourSelectedCell(char *dataBuffer, int selectedCol, 
+    int dataStringLenRequirement)
+{
+  //This is the char between the final digit of the selcted cell and the wall |
+  int startPtr = 5 + selectedCol * 4;
+  //Move this memory up be four bytes
+  memmove((dataBuffer + startPtr + 4), (dataBuffer + startPtr), 
+      (dataStringLenRequirement - startPtr));
+  //Copy the four bytes of the ANSI_RESET code
+  memcpy((dataBuffer + startPtr), ANSI_RESET, 4);
+  //This is the char between the first digit of the selcte cell and the wall |
+  startPtr = 2 + selectedCol * 4;
+  //Move this memory up by five bytes
+  memmove((dataBuffer + startPtr + 5), (dataBuffer + startPtr), 
+      (dataStringLenRequirement - startPtr));
+  //Copy in the five bytes for the cyan ansi colour code
+  memcpy((dataBuffer + startPtr), ANSI_CYAN, 5);
+}
+
+static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount, 
     int renderRow, bool *outOfBounds)
 {
-  int colCount = (int) (ttyWidth - 3) / 4;
-
+  //Hold the digits for the data
   char *string = malloc(sizeof(char) * DIGITS_IN_BYTE);
 
   dataBuffer[0] = ' ';
   dataBuffer[1] = '|';
 
-  for (int i = 0; i < colCount; i++) 
+  int i = 0;
+  for (; i < colCount; i++) 
   {
     if (*outOfBounds)
     {
@@ -92,8 +141,10 @@ static void fillDataBuffer(char* dataBuffer, const DataTape *data, int ttyWidth,
       }
     }
   }
-  dataBuffer[ttyWidth - 1] = ' ';
-  dataBuffer[ttyWidth] = '\0';
+  //Newline is at the end of the chars written, calculated using the inverse of the
+  //colcount, and extra for the next index
+  int newlineIndex = (int) (i + 4) * 4;
+  dataBuffer[newlineIndex] = '\n';
 
   free(string);
 }
