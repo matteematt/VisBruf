@@ -15,6 +15,10 @@ void dt_DelDataTape(DataTape *data)
 
 inline void dt_growTape(DataTape *data)
 {
+  //double the data tape size
+  data->mData = realloc(data->mData, sizeof(char) * data->mDataLen << 2);
+  //set the new half of the data to be 0
+  memset((data->mData + data->mDataLen), 0x00, data->mDataLen);
+  //record that the data length has doubled
   data->mDataLen *= 2;
-  data->mData = realloc(data->mData, sizeof(char) * data->mDataLen);
 }
