@@ -2,6 +2,7 @@
 #define DATATAPE
 
 #include <stdlib.h>
+#include <string.h>
 
 /**
   * mData is a pointer to a chars representing the data
