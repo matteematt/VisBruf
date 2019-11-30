@@ -6,14 +6,16 @@ static void pushOutputIndex(Prompt *prompt, DataTape *data);
 static void jumpForward(Prompt *prompt, DataTape *data);
 static void jumpBackwards(Prompt *prompt, DataTape *data);
 
+static const int INPUT_BUF_LEN = 1024;
+
 //Constructor
 void p_Prompt(Prompt *prompt)
 {
   prompt->mHeadPosition = 0;
   prompt->mHistoryLength = 16;
   prompt->mHistory = malloc(sizeof(Command) * prompt->mHistoryLength);
-  //Room for 128 char input and null byte
-  prompt->mInputBuff = malloc(sizeof(char) * 129);
+  //Room for INPUT_BUF_LEN char input and null byte
+  prompt->mInputBuff = malloc(sizeof(char) * (INPUT_BUF_LEN + 1));
   prompt->mOutputListLen = 8;
   prompt->mOutputList = malloc(sizeof(char) * prompt->mOutputListLen);
   for (int i = 0; i < prompt->mOutputListLen; i++)
@@ -41,7 +43,7 @@ void p_getPromptInput(Prompt *prompt)
   printf("@ ");
 
   //Try and get input
-  if (fgets(prompt->mInputBuff, 128, stdin))
+  if (fgets(prompt->mInputBuff, INPUT_BUF_LEN, stdin))
   {
     //Input is parsed after the the screen is refreshed
   }
@@ -55,7 +57,7 @@ void p_parseInput(Prompt *prompt, DataTape *data)
 {
   for (
       prompt->mInputIndex = 0;
-      prompt->mInputIndex <= 128 && prompt->mInputBuff[prompt->mInputIndex] != '\0'; 
+      prompt->mInputIndex <= INPUT_BUF_LEN && prompt->mInputBuff[prompt->mInputIndex] != '\0'; 
       prompt->mInputIndex++)
   {
     switch (prompt->mInputBuff[prompt->mInputIndex])
