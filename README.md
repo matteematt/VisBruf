@@ -11,6 +11,10 @@ Standard brainfuck commands are supported, and can be either entered at the prom
 - To load a brainfuck file run `$ visbuf -f filename`
 - Or enter commands in the prompt `@ commands`
 
+## Simple Mode
+
+Simple mode will only respond to the eight brainfuck commands, and can load a file from the command line arguments with the `-f` flag. Simple mode will still show the data in memory, although the memory viewer cannot be controlled. To launch the program in simple mode use the `-s` or `--simple-mode` flags. Simple mode flag must be the first flag in the list if used.
+
 ## Tests
 
 This is still a work in progress. Some example brainfuck files online are working correctly, others are not
