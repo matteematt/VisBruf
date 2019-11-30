@@ -16,7 +16,7 @@ void p_Prompt(Prompt *prompt)
   prompt->mHistoryLength = 16;
   prompt->mHistory = malloc(sizeof(Command) * prompt->mHistoryLength);
   //Room for INPUT_BUF_LEN char input and null byte
-  prompt->mInputBuff = malloc(INPUT_BUF_LEN + 1, sizeof(char));
+  prompt->mInputBuff = calloc(INPUT_BUF_LEN + 1, sizeof(char));
   prompt->mOutputListLen = 8;
   prompt->mOutputList = malloc(sizeof(char) * prompt->mOutputListLen);
   for (int i = 0; i < prompt->mOutputListLen; i++)
