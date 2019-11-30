@@ -17,7 +17,9 @@
   */
 typedef struct Settings 
 {
+  bool mIsRunning;
   bool mIsError;
+  bool mIsSimpleMode;
   char *mReadFile;
 } Settings;
 
