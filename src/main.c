@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     p_printOutputList(&prompt, &data);
     p_getPromptInput(&prompt, &settings);
-    p_parseInput(&prompt, &data);
+    p_parseInput(&prompt, &data, &settings);
 
   }
 
