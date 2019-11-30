@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  TickerDisplay display = {.mScrollDepth = 0, .mTickerHeight = 6}; 
+  TickerDisplay display = {.mScrollDepth = 0, .mTickerHeight = 6};
 
   DataTape data;
   dt_DataTape(&data);
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     td_drawTicker(&display, &data, size.ws_col);
 
     p_printOutputList(&prompt, &data);
-    p_getPromptInput(&prompt);
+    p_getPromptInput(&prompt, &settings);
     p_parseInput(&prompt, &data);
 
   }
