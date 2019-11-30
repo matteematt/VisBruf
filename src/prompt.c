@@ -6,7 +6,8 @@ static void pushOutputIndex(Prompt *prompt, DataTape *data);
 static void jumpForward(Prompt *prompt, DataTape *data);
 static void jumpBackwards(Prompt *prompt, DataTape *data);
 
-static const int INPUT_BUF_LEN = 1024;
+//Linux kernel cannot accept more than 4094 input from stdin
+static const int INPUT_BUF_LEN = 4094;
 
 //Constructor
 void p_Prompt(Prompt *prompt)
@@ -15,7 +16,7 @@ void p_Prompt(Prompt *prompt)
   prompt->mHistoryLength = 16;
   prompt->mHistory = malloc(sizeof(Command) * prompt->mHistoryLength);
   //Room for INPUT_BUF_LEN char input and null byte
-  prompt->mInputBuff = malloc(sizeof(char) * (INPUT_BUF_LEN + 1));
+  prompt->mInputBuff = malloc(INPUT_BUF_LEN + 1, sizeof(char));
   prompt->mOutputListLen = 8;
   prompt->mOutputList = malloc(sizeof(char) * prompt->mOutputListLen);
   for (int i = 0; i < prompt->mOutputListLen; i++)
