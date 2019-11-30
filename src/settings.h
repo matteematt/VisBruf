@@ -13,6 +13,9 @@
   */
 
 /**
+  * Is the prompt currently running? False to quit
+  * Is there an error? If so then quit
+  * Are we in simple mode?
   * Pointer to a file to read in, else NULL
   */
 typedef struct Settings 
