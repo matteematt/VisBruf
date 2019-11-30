@@ -7,9 +7,19 @@
 #include "tickerDisplay.h"
 #include "dataTape.h"
 #include "prompt.h"
+#include "settings.h"
 
 int main(int argc, char **argv)
 {
+  Settings settings;
+  s_Settings(&settings);
+  s_ParseArgs(&settings, argc, argv);
+
+  if (settings.mIsError)
+  {
+    return 1;
+  }
+
   TickerDisplay display = {.mScrollDepth = 0, .mTickerHeight = 6}; 
 
   DataTape data;
@@ -37,6 +47,7 @@ int main(int argc, char **argv)
 
   dt_DelDataTape(&data);
   p_DelPrompt(&prompt);
+  s_DelSettings(&settings);
 
   return 0;
 }
