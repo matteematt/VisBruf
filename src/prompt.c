@@ -58,7 +58,8 @@ void p_parseInput(Prompt *prompt, DataTape *data)
 {
   for (
       prompt->mInputIndex = 0;
-      prompt->mInputIndex <= INPUT_BUF_LEN && prompt->mInputBuff[prompt->mInputIndex] != '\0'; 
+      prompt->mInputIndex <= INPUT_BUF_LEN &&
+      prompt->mInputBuff[prompt->mInputIndex] != '\0'; 
       prompt->mInputIndex++)
   {
     switch (prompt->mInputBuff[prompt->mInputIndex])
