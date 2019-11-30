@@ -28,19 +28,18 @@ int main(int argc, char **argv)
   Prompt prompt;
   p_Prompt(&prompt);
 
-  bool isRunning = true;
-
   struct winsize size;
 
-  while (isRunning)
+  while (settings.mIsRunning)
   {
     td_clearTTY();
 
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     td_drawTicker(&display, &data, size.ws_col);
+
     if (!settings.mIsSimpleMode)
     {
-      printf("@help for help, @quit to quit\n"); 
+      printf("@help for help, @quit to quit\n\n"); 
     }
 
     p_printOutputList(&prompt, &data);
