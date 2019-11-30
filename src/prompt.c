@@ -16,7 +16,7 @@ void p_Prompt(Prompt *prompt)
   prompt->mHistoryLength = 16;
   prompt->mHistory = malloc(sizeof(Command) * prompt->mHistoryLength);
   //Room for INPUT_BUF_LEN char input and null byte
-  prompt->mInputBuff = malloc(INPUT_BUF_LEN + 1, sizeof(char));
+  prompt->mInputBuff = calloc(INPUT_BUF_LEN + 1, sizeof(char));
   prompt->mOutputListLen = 8;
   prompt->mOutputList = malloc(sizeof(char) * prompt->mOutputListLen);
   for (int i = 0; i < prompt->mOutputListLen; i++)
@@ -39,18 +39,44 @@ void p_DelPrompt(Prompt *prompt)
 }
 
 //Reset output list and get user input into the buffer
-void p_getPromptInput(Prompt *prompt)
+//If a user has requsted to load a file read that into input instead
+void p_getPromptInput(Prompt *prompt, Settings *settings)
 {
-  printf("@ ");
-
-  //Try and get input
-  if (fgets(prompt->mInputBuff, INPUT_BUF_LEN, stdin))
+  if (settings->mReadFile == 0)
   {
-    //Input is parsed after the the screen is refreshed
+    printf("@ ");
+
+    //Try and get input
+    if (fgets(prompt->mInputBuff, INPUT_BUF_LEN, stdin))
+    {
+      //Input is parsed after the the screen is refreshed
+    }
+    else
+    {
+      printf("Error getting input from user, exiting\n");
+    }
   }
   else
   {
-    printf("Error getting input from user, exiting\n");
+    //Read in requested file into the buffer
+    FILE *file = fopen(settings->mReadFile, "rb");
+    //Put the file pointer to the end of the file
+    fseek(file, 0, SEEK_END);
+    //Get the position of the file pointer (hense getting the filesize)
+    long fileSize = ftell(file);
+    //rewind the file pointer so we can start reading from the file
+    fseek(file, 0, SEEK_SET);
+
+    prompt->mInputBuff = realloc(prompt->mInputBuff, sizeof(char) * (fileSize + 1));
+    fread(prompt->mInputBuff, 1, fileSize, file);
+    fclose(file);
+
+    //Add null byte
+    prompt->mInputBuff[fileSize] = '\0';
+
+    //Read in file so clear filename so we show the user the prompt next time
+    free(settings->mReadFile);
+    settings->mReadFile = 0;
   }
 }
 
@@ -58,8 +84,7 @@ void p_parseInput(Prompt *prompt, DataTape *data)
 {
   for (
       prompt->mInputIndex = 0;
-      prompt->mInputIndex <= INPUT_BUF_LEN &&
-      prompt->mInputBuff[prompt->mInputIndex] != '\0'; 
+      prompt->mInputBuff[prompt->mInputIndex] != '\0';
       prompt->mInputIndex++)
   {
     switch (prompt->mInputBuff[prompt->mInputIndex])

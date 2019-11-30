@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "dataTape.h"
+#include "settings.h"
 
 typedef struct Command {
   unsigned char *mCommand;
@@ -35,7 +36,7 @@ typedef struct Prompt{
 void p_Prompt(Prompt *prompt);
 void p_DelPrompt(Prompt *prompt);
 
-void p_getPromptInput(Prompt *prompt);
+void p_getPromptInput(Prompt *prompt, Settings *settings);
 void p_parseInput(Prompt *prompt, DataTape *data);
 void p_printOutputList(Prompt *prompt, DataTape *data);
 
