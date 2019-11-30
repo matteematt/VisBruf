@@ -14,6 +14,7 @@ Standard brainfuck commands are supported, and can be either entered at the prom
 ## Simple Mode
 
 Simple mode will only respond to the eight brainfuck commands, and can load a file from the command line arguments with the `-f` flag. Simple mode will still show the data in memory, although the memory viewer cannot be controlled. To launch the program in simple mode use the `-s` or `--simple-mode` flags. Simple mode flag must be the first flag in the list if used.
+To quit the executable in simple mode you must use Ctrl-C.
 
 ## Tests
 
