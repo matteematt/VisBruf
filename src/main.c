@@ -38,6 +38,10 @@ int main(int argc, char **argv)
 
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
     td_drawTicker(&display, &data, size.ws_col);
+    if (!settings.mIsSimpleMode)
+    {
+      printf("@help for help, @quit to quit\n"); 
+    }
 
     p_printOutputList(&prompt, &data);
     p_getPromptInput(&prompt, &settings);
