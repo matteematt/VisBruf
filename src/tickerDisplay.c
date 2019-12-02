@@ -10,16 +10,17 @@ static const char *ANSI_RESET = "\x1b[0m";
 
 //Private functions declarations
 static char *drawTickerHR(int ttyWidth);
-static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount, 
+static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount,
     int renderRow, bool *outOfBounds);
 static void formatCharAsIntToString(char *string, unsigned char data);
 static unsigned char getCharInPosition(unsigned char byte, int position);
 static void colourSelectedCell(char *dataBuffer, int selectedCol,
     int dataStringLenRequirement);
+static void createAddressRangeString(char *string, const TickerDisplay *display, int ttyWidth);
 
 inline void td_clearTTY(void)
 {
-  printf("\e[1;1H\e[2J"); 
+  printf("\e[1;1H\e[2J");
 }
 
 int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int ttyWidth)
@@ -38,13 +39,13 @@ int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int tty
   //string buffer to hold the data row to print
   char *dataBuffer = malloc(sizeof(char) * dataStringLenRequirement);
 
-  //The number of colums (data) to print 
+  //The number of colums (data) to print
   int colCount = (int) (ttyWidth - 3) / 4;
 
   //get what line the currently selcted cell is
   int selectedLine = (int) data->mDataIndex / colCount;
 
-  printf("\n%s\n", verticalSeperator); 
+  printf("\n%s\n", verticalSeperator);
   int renderRow;
   for (int i = 0; i < dataTicker->mTickerHeight; i++)
   {
@@ -55,7 +56,7 @@ int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int tty
     if (selectedLine == renderRow)
     {
       //If protects against 0/0 erors
-      int selectedCol = (selectedLine == 0) ? data->mDataIndex 
+      int selectedCol = (selectedLine == 0) ? data->mDataIndex
         : data->mDataIndex % selectedLine;
       colourSelectedCell(dataBuffer, selectedCol, dataStringLenRequirement);
     }
@@ -63,7 +64,10 @@ int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int tty
     printf("%s\n", verticalSeperator);
     drawLines += 2;
   }
-  printf("\n");
+
+  memset(dataBuffer, 0x00, dataStringLenRequirement);
+  createAddressRangeString(dataBuffer, dataTicker, ttyWidth);
+  printf("%s\n", dataBuffer);
   drawLines++;
 
   free(verticalSeperator);
@@ -88,26 +92,26 @@ static void formatCharAsIntToString(char *string, unsigned char data)
 }
 
 //Do this logic in the loop instead, take the calcualion of colcount to before the loop
-static void colourSelectedCell(char *dataBuffer, int selectedCol, 
+static void colourSelectedCell(char *dataBuffer, int selectedCol,
     int dataStringLenRequirement)
 {
   //This is the char between the final digit of the selcted cell and the wall |
   int startPtr = 5 + selectedCol * 4;
   //Move this memory up be four bytes
-  memmove((dataBuffer + startPtr + 4), (dataBuffer + startPtr), 
+  memmove((dataBuffer + startPtr + 4), (dataBuffer + startPtr),
       (dataStringLenRequirement - startPtr));
   //Copy the four bytes of the ANSI_RESET code
   memcpy((dataBuffer + startPtr), ANSI_RESET, 4);
   //This is the char between the first digit of the selcte cell and the wall |
   startPtr = 2 + selectedCol * 4;
   //Move this memory up by five bytes
-  memmove((dataBuffer + startPtr + 5), (dataBuffer + startPtr), 
+  memmove((dataBuffer + startPtr + 5), (dataBuffer + startPtr),
       (dataStringLenRequirement - startPtr));
   //Copy in the five bytes for the cyan ansi colour code
   memcpy((dataBuffer + startPtr), ANSI_CYAN, 5);
 }
 
-static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount, 
+static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount,
     int renderRow, bool *outOfBounds)
 {
   //Hold the digits for the data
@@ -117,7 +121,7 @@ static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount,
   dataBuffer[1] = '|';
 
   int i = 0;
-  for (; i < colCount; i++) 
+  for (; i < colCount; i++)
   {
     if (*outOfBounds)
     {
@@ -171,4 +175,18 @@ static char *drawTickerHR(int ttyWidth)
   seperator[ttyWidth] = '\0';
 
   return seperator;
+}
+
+static void createAddressRangeString(char *string, const TickerDisplay *display, int ttyWidth)
+{
+  //The number of colums (data) to print
+  int colCount = (int) (ttyWidth - 3) / 4;
+
+  int firstIndex = colCount * display->mScrollDepth;
+  int finalIndex = firstIndex + (colCount * display->mTickerHeight);
+
+  const int OFFSET = 1;
+
+  sprintf(&string[OFFSET], "Viewing addresses 0x%X to 0x%X\n", firstIndex, finalIndex);
+  memset(string, 0x20, OFFSET);
 }
