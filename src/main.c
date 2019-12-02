@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  TickerDisplay display = {.mScrollDepth = 0, .mTickerHeight = 6};
+  TickerDisplay displayTicker = {.mScrollDepth = 0, .mTickerHeight = 6};
 
   DataTape data;
   dt_DataTape(&data);
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     td_clearTTY();
 
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-    td_drawTicker(&display, &data, size.ws_col);
+    td_drawTicker(&displayTicker, &data, size.ws_col);
 
     if (!settings.mIsSimpleMode)
     {
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     p_printOutputList(&prompt, &data);
     p_getPromptInput(&prompt, &settings);
-    p_parseInput(&prompt, &data, &settings, &display);
+    p_parseInput(&prompt, &data, &settings, &displayTicker);
 
   }
 

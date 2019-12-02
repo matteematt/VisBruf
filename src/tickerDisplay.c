@@ -16,7 +16,7 @@ static void formatCharAsIntToString(char *string, unsigned char data);
 static unsigned char getCharInPosition(unsigned char byte, int position);
 static void colourSelectedCell(char *dataBuffer, int selectedCol,
     int dataStringLenRequirement);
-static void createAddressRangeString(char *string, const TickerDisplay *display, int ttyWidth);
+static void createAddressRangeString(char *string, const TickerDisplay *displayTicker, int ttyWidth);
 
 inline void td_clearTTY(void)
 {
@@ -180,13 +180,13 @@ static char *drawTickerHR(int ttyWidth)
   return seperator;
 }
 
-static void createAddressRangeString(char *string, const TickerDisplay *display, int ttyWidth)
+static void createAddressRangeString(char *string, const TickerDisplay *displayTicker, int ttyWidth)
 {
   //The number of colums (data) to print
   int colCount = (int) (ttyWidth - 3) / 4;
 
-  int firstIndex = colCount * display->mScrollDepth;
-  int finalIndex = firstIndex + (colCount * display->mTickerHeight);
+  int firstIndex = colCount * displayTicker->mScrollDepth;
+  int finalIndex = firstIndex + (colCount * displayTicker->mTickerHeight);
 
   const int OFFSET = 1;
 

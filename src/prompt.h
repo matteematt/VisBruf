@@ -39,7 +39,7 @@ void p_DelPrompt(Prompt *prompt);
 
 void p_getPromptInput(Prompt *prompt, Settings *settings);
 void p_parseInput(Prompt *prompt, DataTape *data, Settings *settings,
-    TickerDisplay *display);
+    TickerDisplay *displayTicker);
 void p_printOutputList(Prompt *prompt, DataTape *data);
 
 #endif

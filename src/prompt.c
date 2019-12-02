@@ -6,7 +6,7 @@ static void pushOutputIndex(Prompt *prompt, DataTape *data);
 static void jumpForward(Prompt *prompt, DataTape *data);
 static void jumpBackwards(Prompt *prompt, DataTape *data);
 static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settings,
-    TickerDisplay *display);
+    TickerDisplay *displayTicker);
 
 //Linux kernel cannot accept more than 4094 input from stdin
 static const int INPUT_BUF_LEN = 4094;
@@ -83,7 +83,7 @@ void p_getPromptInput(Prompt *prompt, Settings *settings)
 }
 
 void p_parseInput(Prompt *prompt, DataTape *data, Settings *settings,
-    TickerDisplay *display)
+    TickerDisplay *displayTicker)
 {
   for (
       prompt->mInputIndex = 0;
@@ -137,7 +137,7 @@ void p_parseInput(Prompt *prompt, DataTape *data, Settings *settings,
         //No more brainfuck commands are parse after a visbruf command
         if (!settings->mIsSimpleMode)
         {
-          parseVisBrufCommand(prompt, data, settings, display);
+          parseVisBrufCommand(prompt, data, settings, displayTicker);
           return;
         }
         break;
@@ -251,7 +251,7 @@ static inline void pushOutputIndex(Prompt *prompt, DataTape *data)
 
 //Handles commands built into the promot that are not part of brainfuck
 static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settings,
-    TickerDisplay *display)
+    TickerDisplay *displayTicker)
 {
   //Need a buffer to do string comparisons
   const int MAX_COMMAND_LEN = 10;
@@ -280,13 +280,13 @@ static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settin
     }
     else if (strncmp(commandBuffer, "@naddress", 9) == 0)
     {
-      display->mScrollDepth++;
+      displayTicker->mScrollDepth++;
     }
     else if (strncmp(commandBuffer, "@paddress", 9) == 0)
     {
-      if (display->mScrollDepth >= 1)
+      if (displayTicker->mScrollDepth >= 1)
       {
-        display->mScrollDepth--;
+        displayTicker->mScrollDepth--;
       }
     }
     else if (strncmp(commandBuffer, "@memrows", 8) == 0)
@@ -294,7 +294,7 @@ static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settin
       int newSize;
       if (sscanf(commandBuffer, "@memrows%d", &newSize) == 1)
       {
-        display->mTickerHeight = newSize > -1 ? newSize : 0;
+        displayTicker->mTickerHeight = newSize > -1 ? newSize : 0;
       }
       else
       {
