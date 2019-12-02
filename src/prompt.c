@@ -254,7 +254,7 @@ static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settin
     TickerDisplay *display)
 {
   //Need a buffer to do string comparisons
-  const int MAX_COMMAND_LEN = 9;
+  const int MAX_COMMAND_LEN = 10;
   char *commandBuffer = malloc(sizeof(char) * (MAX_COMMAND_LEN + 1));
 
   for (
@@ -287,6 +287,18 @@ static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settin
       if (display->mScrollDepth >= 1)
       {
         display->mScrollDepth--;
+      }
+    }
+    else if (strncmp(commandBuffer, "@memrows", 8) == 0)
+    {
+      int newSize;
+      if (sscanf(commandBuffer, "@memrows%d", &newSize) == 1)
+      {
+        display->mTickerHeight = newSize > -1 ? newSize : 0;
+      }
+      else
+      {
+        printf("Usage @memrowsDD where DD is two digits of size\n");
       }
     }
   }
