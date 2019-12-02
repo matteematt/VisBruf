@@ -25,6 +25,10 @@ inline void td_clearTTY(void)
 
 int td_drawTicker(const TickerDisplay *dataTicker, const DataTape *data, int ttyWidth)
 {
+  if (dataTicker->mTickerHeight == 0)
+  {
+    return 0;
+  }
   //Keep track of how many lines have been drawn
   int drawLines = 2;
 
