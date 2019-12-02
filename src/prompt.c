@@ -254,7 +254,7 @@ static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settin
     TickerDisplay *displayTicker)
 {
   //Need a buffer to do string comparisons
-  const int MAX_COMMAND_LEN = 10;
+  const int MAX_COMMAND_LEN = 11;
   char *commandBuffer = malloc(sizeof(char) * (MAX_COMMAND_LEN + 1));
 
   for (
@@ -280,13 +280,30 @@ static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settin
     }
     else if (strncmp(commandBuffer, "@naddress", 9) == 0)
     {
-      displayTicker->mScrollDepth++;
+      int newOffset;
+      if (sscanf(commandBuffer, "@naddress%d", &newOffset) == 1)
+      {
+        displayTicker->mScrollDepth += newOffset;
+      }
+      else
+      {
+        displayTicker->mScrollDepth++;
+      }
     }
     else if (strncmp(commandBuffer, "@paddress", 9) == 0)
     {
-      if (displayTicker->mScrollDepth >= 1)
+      int newOffset;
+      if (sscanf(commandBuffer, "@paddress%d", &newOffset) == 1)
+      {
+        displayTicker->mScrollDepth -= newOffset;
+      }
+      else
       {
         displayTicker->mScrollDepth--;
+      }
+      if (displayTicker->mScrollDepth < 0)
+      {
+        displayTicker->mScrollDepth = 0;
       }
     }
     else if (strncmp(commandBuffer, "@memrows", 8) == 0)
