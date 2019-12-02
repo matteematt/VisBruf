@@ -5,6 +5,8 @@ static void parseInputCommand(DataTape *data);
 static void pushOutputIndex(Prompt *prompt, DataTape *data);
 static void jumpForward(Prompt *prompt, DataTape *data);
 static void jumpBackwards(Prompt *prompt, DataTape *data);
+static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settings,
+    TickerDisplay *displayTicker);
 
 //Linux kernel cannot accept more than 4094 input from stdin
 static const int INPUT_BUF_LEN = 4094;
@@ -80,7 +82,8 @@ void p_getPromptInput(Prompt *prompt, Settings *settings)
   }
 }
 
-void p_parseInput(Prompt *prompt, DataTape *data)
+void p_parseInput(Prompt *prompt, DataTape *data, Settings *settings,
+    TickerDisplay *displayTicker)
 {
   for (
       prompt->mInputIndex = 0;
@@ -128,6 +131,15 @@ void p_parseInput(Prompt *prompt, DataTape *data)
       case ']':
         //Jump to the command after the matching [ if the current byte is non-zero
         jumpBackwards(prompt, data);
+        break;
+      case '@':
+        //If not in simple mode this is the start of a command, so process it as such
+        //No more brainfuck commands are parse after a visbruf command
+        if (!settings->mIsSimpleMode)
+        {
+          parseVisBrufCommand(prompt, data, settings, displayTicker);
+          return;
+        }
         break;
       default:
         //do nothing
@@ -235,4 +247,78 @@ static inline void pushOutputIndex(Prompt *prompt, DataTape *data)
     }
   }
   prompt->mOutputList[prompt->mOutputListIndex] = data->mData[data->mDataIndex];
+}
+
+//Handles commands built into the promot that are not part of brainfuck
+static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settings,
+    TickerDisplay *displayTicker)
+{
+  //Need a buffer to do string comparisons
+  const int MAX_COMMAND_LEN = 11;
+  char *commandBuffer = malloc(sizeof(char) * (MAX_COMMAND_LEN + 1));
+
+  for (
+      prompt->mInputIndex = 0;
+      prompt->mInputBuff[prompt->mInputIndex] != '\0';
+      prompt->mInputIndex++
+      )
+  {
+    strncpy(commandBuffer, &prompt->mInputBuff[prompt->mInputIndex], MAX_COMMAND_LEN);
+    commandBuffer[MAX_COMMAND_LEN] = '\0';
+
+    if (strncmp(commandBuffer, "@reset", 6) == 0)
+    {
+      data->mDataIndex = 0;
+      memset(data->mData, 0x00, data->mDataLen);
+      prompt->mInputIndex += 5;
+    }
+    else if (strncmp(commandBuffer, "@quit", 5) == 0)
+    {
+      settings->mIsRunning = false;
+      free(commandBuffer);
+      return;
+    }
+    else if (strncmp(commandBuffer, "@naddress", 9) == 0)
+    {
+      int newOffset;
+      if (sscanf(commandBuffer, "@naddress%d", &newOffset) == 1)
+      {
+        displayTicker->mScrollDepth += newOffset;
+      }
+      else
+      {
+        displayTicker->mScrollDepth++;
+      }
+    }
+    else if (strncmp(commandBuffer, "@paddress", 9) == 0)
+    {
+      int newOffset;
+      if (sscanf(commandBuffer, "@paddress%d", &newOffset) == 1)
+      {
+        displayTicker->mScrollDepth -= newOffset;
+      }
+      else
+      {
+        displayTicker->mScrollDepth--;
+      }
+      if (displayTicker->mScrollDepth < 0)
+      {
+        displayTicker->mScrollDepth = 0;
+      }
+    }
+    else if (strncmp(commandBuffer, "@memrows", 8) == 0)
+    {
+      int newSize;
+      if (sscanf(commandBuffer, "@memrows%d", &newSize) == 1)
+      {
+        displayTicker->mTickerHeight = newSize > -1 ? newSize : 0;
+      }
+      else
+      {
+        printf("Usage @memrowsDD where DD is two digits of size\n");
+      }
+    }
+  }
+
+  free(commandBuffer);
 }

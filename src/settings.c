@@ -6,7 +6,9 @@ static void parseFilenameFlag(Settings *settings, int argIndx, int argc, char** 
 void s_Settings(Settings *settings)
 {
   settings->mReadFile = 0;
+  settings->mIsRunning = true;
   settings->mIsError = false;
+  settings->mIsSimpleMode = false;
 }
 
 void s_DelSettings(Settings *settings)
@@ -26,6 +28,19 @@ void s_ParseArgs(Settings *settings, int argc, char **argv)
     if (strncmp(argv[i], "-f", 2) == 0) 
     {
       parseFilenameFlag(settings, i, argc, argv);
+      i++;
+    }
+    else if(strncmp(argv[i], "-s", 2) == 0 ||
+            strncmp(argv[i], "--simple-mode", 13) == 0)
+    {
+      if (i != 1)
+      {
+        printf("ERROR: Simple mode must be the first flag selected if used\n");
+        settings->mIsError = true;
+        return;
+      }
+      //Set simple mode
+      settings->mIsSimpleMode = true;
     }
   }
 }

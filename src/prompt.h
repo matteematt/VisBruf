@@ -6,6 +6,7 @@
 
 #include "dataTape.h"
 #include "settings.h"
+#include "tickerDisplay.h"
 
 typedef struct Command {
   unsigned char *mCommand;
@@ -37,7 +38,8 @@ void p_Prompt(Prompt *prompt);
 void p_DelPrompt(Prompt *prompt);
 
 void p_getPromptInput(Prompt *prompt, Settings *settings);
-void p_parseInput(Prompt *prompt, DataTape *data);
+void p_parseInput(Prompt *prompt, DataTape *data, Settings *settings,
+    TickerDisplay *displayTicker);
 void p_printOutputList(Prompt *prompt, DataTape *data);
 
 #endif
