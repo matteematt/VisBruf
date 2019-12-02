@@ -123,6 +123,11 @@ static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount,
   int i = 0;
   for (; i < colCount; i++)
   {
+    int dataIndex = colCount * renderRow + i;
+    if (outOfBounds && dataIndex >= data->mDataLen - 1)
+    {
+      *outOfBounds = true;
+    }
     if (*outOfBounds)
     {
       dataBuffer[2 + i * 4] = ' ';
@@ -132,17 +137,11 @@ static void fillDataBuffer(char* dataBuffer, const DataTape *data, int colCount,
     }
     else
     {
-      int dataIndex = colCount * renderRow + i;
       formatCharAsIntToString(string, data->mData[dataIndex]);
       dataBuffer[2 + i * 4] = string[0];
       dataBuffer[3 + i * 4] = string[1];
       dataBuffer[4 + i * 4] = string[2];
       dataBuffer[5 + i * 4] = '|';
-      if (dataIndex >= data->mDataLen - 1)
-      {
-        //Next time we will be out of bounds
-        *outOfBounds = true;
-      }
     }
   }
   //Newline is at the end of the chars written, calculated using the inverse of the
