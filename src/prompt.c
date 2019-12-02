@@ -282,6 +282,13 @@ static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settin
     {
       display->mScrollDepth++;
     }
+    else if (strncmp(commandBuffer, "@paddress", 9) == 0)
+    {
+      if (display->mScrollDepth >= 1)
+      {
+        display->mScrollDepth--;
+      }
+    }
   }
 
   free(commandBuffer);
