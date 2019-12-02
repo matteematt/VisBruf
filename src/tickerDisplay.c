@@ -187,6 +187,6 @@ static void createAddressRangeString(char *string, const TickerDisplay *display,
 
   const int OFFSET = 1;
 
-  sprintf(&string[OFFSET], "Viewing addresses 0x%X to 0x%X\n", firstIndex, finalIndex);
+  sprintf(&string[OFFSET], "Viewing addresses 0x%d to 0x%d\n", firstIndex, finalIndex);
   memset(string, 0x20, OFFSET);
 }

@@ -5,7 +5,8 @@ static void parseInputCommand(DataTape *data);
 static void pushOutputIndex(Prompt *prompt, DataTape *data);
 static void jumpForward(Prompt *prompt, DataTape *data);
 static void jumpBackwards(Prompt *prompt, DataTape *data);
-static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settings);
+static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settings,
+    TickerDisplay *display);
 
 //Linux kernel cannot accept more than 4094 input from stdin
 static const int INPUT_BUF_LEN = 4094;
@@ -81,7 +82,8 @@ void p_getPromptInput(Prompt *prompt, Settings *settings)
   }
 }
 
-void p_parseInput(Prompt *prompt, DataTape *data, Settings *settings)
+void p_parseInput(Prompt *prompt, DataTape *data, Settings *settings,
+    TickerDisplay *display)
 {
   for (
       prompt->mInputIndex = 0;
@@ -135,7 +137,7 @@ void p_parseInput(Prompt *prompt, DataTape *data, Settings *settings)
         //No more brainfuck commands are parse after a visbruf command
         if (!settings->mIsSimpleMode)
         {
-          parseVisBrufCommand(prompt, data, settings);
+          parseVisBrufCommand(prompt, data, settings, display);
           return;
         }
         break;
@@ -248,10 +250,11 @@ static inline void pushOutputIndex(Prompt *prompt, DataTape *data)
 }
 
 //Handles commands built into the promot that are not part of brainfuck
-static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settings)
+static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settings,
+    TickerDisplay *display)
 {
   //Need a buffer to do string comparisons
-  const int MAX_COMMAND_LEN = 6;
+  const int MAX_COMMAND_LEN = 9;
   char *commandBuffer = malloc(sizeof(char) * (MAX_COMMAND_LEN + 1));
 
   for (
@@ -274,6 +277,10 @@ static void parseVisBrufCommand(Prompt *prompt, DataTape *data, Settings *settin
       settings->mIsRunning = false;
       free(commandBuffer);
       return;
+    }
+    else if (strncmp(commandBuffer, "@naddress", 9) == 0)
+    {
+      display->mScrollDepth++;
     }
   }
 

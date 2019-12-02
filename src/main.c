@@ -39,12 +39,12 @@ int main(int argc, char **argv)
 
     if (!settings.mIsSimpleMode)
     {
-      printf("@help for help, @quit to quit\n\n"); 
+      printf("@help for help, @quit to quit\n\n");
     }
 
     p_printOutputList(&prompt, &data);
     p_getPromptInput(&prompt, &settings);
-    p_parseInput(&prompt, &data, &settings);
+    p_parseInput(&prompt, &data, &settings, &display);
 
   }
 
